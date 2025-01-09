@@ -3,10 +3,10 @@ import re
 
 from .common import InfoExtractor
 from ..utils import (
+    PostProcessingError,
     extract_attributes,
     get_element_html_by_id,
     make_dir,
-    PostProcessingError,
     traverse_obj,
 )
 
@@ -101,9 +101,9 @@ class CreateAcademyIE(InfoExtractor):
         for url in docs:
             i += 1
             filename = file_prefix + '.' + str(i).zfill(2) + '.pdf'
-            
+
             make_dir(filename, PostProcessingError)
-            self._downloader.dl(filename, { 'url': url })
+            self._downloader.dl(filename, {'url': url})
 
     def _real_extract(self, url):
         video_id = url.split('/')[-1]
@@ -143,9 +143,7 @@ class CreateAcademyIE(InfoExtractor):
 
         return {
             **video_obj,
-            **{
-                '__post_extractor': self._download_supplements(lesson, video_obj),
-            },
+            '__post_extractor': self._download_supplements(lesson, video_obj),
         }
 
 

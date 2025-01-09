@@ -5,6 +5,8 @@ from .common import InfoExtractor
 from ..utils import (
     extract_attributes,
     get_element_html_by_id,
+    make_dir,
+    PostProcessingError,
     traverse_obj,
 )
 
@@ -87,9 +89,6 @@ class CreateAcademyIE(InfoExtractor):
         return json.loads(attributes.get('data-page'))
 
     def _download_supplements(self, lesson, video_obj):
-        # @todo
-        # run post download
-
         if self.get_param('downloadsupplements') is False:
             return
 
@@ -103,6 +102,7 @@ class CreateAcademyIE(InfoExtractor):
             i += 1
             filename = file_prefix + '.' + str(i).zfill(2) + '.pdf'
             
+            make_dir(filename, PostProcessingError)
             self._downloader.dl(filename, { 'url': url })
 
     def _real_extract(self, url):
@@ -141,8 +141,12 @@ class CreateAcademyIE(InfoExtractor):
             'course_id': str(traverse_obj(data, ('props', 'course', 'id'))).zfill(2),
         }
 
-        self._download_supplements(lesson, video_obj)
-        return video_obj
+        return {
+            **video_obj,
+            **{
+                '__post_extractor': self._download_supplements(lesson, video_obj),
+            },
+        }
 
 
 class CreateAcademyCourseIE(CreateAcademyIE):

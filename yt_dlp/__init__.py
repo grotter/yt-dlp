@@ -784,6 +784,7 @@ def parse_options(argv=None):
         else None)
 
     return ParsedOptions(parser, opts, urls, {
+        'downloadsupplements': opts.downloadsupplements,
         'usenetrc': opts.usenetrc,
         'netrc_location': opts.netrc_location,
         'netrc_cmd': opts.netrc_cmd,

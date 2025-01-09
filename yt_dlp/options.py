@@ -1662,6 +1662,10 @@ def create_parser():
         action='store_false', dest='embed_infojson',
         help='Do not embed the infojson as an attachment to the video file')
     postproc.add_option(
+        '--download-supplements',
+        action='store_true', dest='downloadsupplements', default=False,
+        help='Download available supplements for supported extractors')
+    postproc.add_option(
         '--metadata-from-title',
         metavar='FORMAT', dest='metafromtitle',
         help=optparse.SUPPRESS_HELP)

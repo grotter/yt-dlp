@@ -3284,6 +3284,19 @@ class YoutubeDL:
         elif _infojson_written is None:
             return
 
+        # Download supplements
+        if self.params.get('downloadsupplements'):
+            if not isinstance(info_dict['supplements'], list) or len(info_dict['supplements']) == 0:
+                self.report_warning('There are no supplements to download.')
+            else:
+                file_prefix = self.prepare_filename(info_dict)
+                i = 0
+
+                for url in info_dict['supplements']:
+                    i += 1
+                    filename = file_prefix + '.' + str(i).zfill(2) + '.pdf'
+                    self.dl(filename, {'url': url})
+
         # Note: Annotations are deprecated
         annofn = None
         if self.params.get('writeannotations', False):

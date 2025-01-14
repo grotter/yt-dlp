@@ -3,10 +3,8 @@ import re
 
 from .common import InfoExtractor
 from ..utils import (
-    PostProcessingError,
     extract_attributes,
     get_element_html_by_id,
-    make_dir,
     traverse_obj,
 )
 
@@ -88,23 +86,6 @@ class CreateAcademyIE(InfoExtractor):
 
         return json.loads(attributes.get('data-page'))
 
-    def _download_supplements(self, lesson, video_obj):
-        if self.get_param('downloadsupplements') is False:
-            return
-
-        # download to same dir as target file
-        file_prefix = self._downloader.prepare_filename(video_obj)
-
-        i = 0
-        docs = lesson.get('documents_urls')
-
-        for url in docs:
-            i += 1
-            filename = file_prefix + '.' + str(i).zfill(2) + '.pdf'
-
-            make_dir(filename, PostProcessingError)
-            self._downloader.dl(filename, {'url': url})
-
     def _real_extract(self, url):
         video_id = url.split('/')[-1]
         data = self._get_page_data(url, video_id)
@@ -125,7 +106,7 @@ class CreateAcademyIE(InfoExtractor):
         lesson_metadata = self._get_lesson_metadata(data, createacademy_id)
         section = lesson_metadata.get('section')
 
-        video_obj = {
+        return {
             'id': str(createacademy_id),
             'ext': 'mp4',
             'file_prefix': lesson_metadata.get('file_prefix'),
@@ -133,17 +114,13 @@ class CreateAcademyIE(InfoExtractor):
             'display_id': video_id,
             'description': lesson.get('description'),
             'thumbnail': lesson.get('thumbnail'),
+            'supplements': lesson.get('documents_urls'),
             'formats': formats,
             'subtitles': subtitles,
             'chapter': section.get('title').strip(),
             'chapter_number': section.get('number'),
             'chapter_id': str(section.get('id')),
             'course_id': str(traverse_obj(data, ('props', 'course', 'id'))).zfill(2),
-        }
-
-        return {
-            **video_obj,
-            '__post_extractor': self._download_supplements(lesson, video_obj),
         }
 
 

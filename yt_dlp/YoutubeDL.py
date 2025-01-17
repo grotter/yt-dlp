@@ -3292,10 +3292,10 @@ class YoutubeDL:
                 file_prefix = self.prepare_filename(info_dict)
                 i = 0
 
-                for url in info_dict['supplements']:
+                for supplement in info_dict['supplements']:
                     i += 1
-                    filename = file_prefix + '.' + str(i).zfill(2) + '.pdf'
-                    self.dl(filename, {'url': url})
+                    filename = file_prefix + '.' + str(i).zfill(2) + '.' + supplement['ext']
+                    self.dl(filename, {'url': supplement['url']})
 
         # Note: Annotations are deprecated
         annofn = None

@@ -102,9 +102,18 @@ class CreateAcademyIE(InfoExtractor):
         formats.extend(fmts)
         self._merge_subtitles(subs, target=subtitles)
 
-        # metadata and supplements
+        # metadata
         lesson_metadata = self._get_lesson_metadata(data, createacademy_id)
         section = lesson_metadata.get('section')
+
+        # supplements
+        supplements = []
+
+        for url in lesson.get('documents_urls'):
+            supplements.append({
+                'url': url,
+                'ext': 'pdf',
+            })
 
         return {
             'id': str(createacademy_id),
@@ -114,7 +123,7 @@ class CreateAcademyIE(InfoExtractor):
             'display_id': video_id,
             'description': lesson.get('description'),
             'thumbnail': lesson.get('thumbnail'),
-            'supplements': lesson.get('documents_urls'),
+            'supplements': supplements,
             'formats': formats,
             'subtitles': subtitles,
             'chapter': section.get('title').strip(),
